@@ -3,7 +3,11 @@ package com.kunal.SpringJDBCDemo.Dao;
 import com.kunal.SpringJDBCDemo.model.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,16 +27,23 @@ public class StudentRepo {
 
     public void save(Student student) {
 
-        String query = "insert into student (rollno, name, marks) values (?,?,?)";
+        String query1 = "insert into student (rollno, name, marks) values (?,?,?)";
 
-        int rows = jdbcTemplate.update(query, student.getRoll(), student.getName(), student.getMarks());
-        System.out.println(rows + " effected...");
+        int rows = jdbcTemplate.update(query1, student.getRoll(), student.getName(), student.getMarks());
+        System.out.println(rows + " row(s) affected...");
     }
 
     public List<Student> findAll() {
 
-        List<Student> studentList = new ArrayList<>();
-        return  studentList;
+        String query2 = "select * from student";
+
+        return jdbcTemplate.query(query2, (rs, rowNum) -> {
+            Student s = new Student();
+            s.setRoll(rs.getInt("rollno"));
+            s.setName(rs.getString("name"));
+            s.setMarks(rs.getInt("marks"));
+            return s;
+        });
 
     }
 }
